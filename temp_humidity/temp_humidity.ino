@@ -6,6 +6,9 @@
 #define DHTTYPE DHT22       // DHT 22 (AM2302)
 DHT dht(DHTPIN, DHTTYPE);   // Initialize DHT sensor for normal 16mhz Arduino
 #define BUTTONPIN 7
+#define NUMDELAYS 30        // 30 delays x 100 ms = 3 seconds, because the DHT22
+                            // updates only every ~2 seconds
+#define DELAYTIME 100       // 100 ms for delay
 
 // Set the LCD address to 0x3F for a 16 chars and 2 line display
 LiquidCrystal_I2C lcd(0x3F, 16, 2);
@@ -39,7 +42,7 @@ void loop() {
         lcd.noBacklight();
     }
 
-    if(delays > 30){
+    if(delays >= NUMDELAYS){
         delays = 0;
         // Read data and store it to variables hum and temp
         hum = dht.readHumidity();
@@ -62,6 +65,8 @@ void loop() {
         lcd.setCursor(7, 1);
         lcd.print(hum);
     }
-    delay(100);
-    delays++;
+    delay(DELAYTIME);
+    if(delays < NUMDELAYS){
+        delays++;
+    }
 }
